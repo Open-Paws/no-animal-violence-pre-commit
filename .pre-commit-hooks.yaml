@@ -1,0 +1,7 @@
+- id: speciesist-language
+  name: Speciesist Language Scanner
+  description: Detect speciesist language and suggest inclusive alternatives
+  entry: speciesist-language-check
+  language: python
+  types: [text]
+  stages: [pre-commit]
