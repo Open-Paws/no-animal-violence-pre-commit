@@ -1,4 +1,4 @@
-# Speciesist Language Scanner — pre-commit hook
+# No Animal Violence — pre-commit hook
 
 A [pre-commit](https://pre-commit.com) hook that detects speciesist language in code and documentation, suggesting clearer, more professional alternatives.
 
@@ -8,10 +8,10 @@ Add to your `.pre-commit-config.yaml`:
 
 ```yaml
 repos:
-  - repo: https://github.com/Open-Paws/speciesist-language-pre-commit
+  - repo: https://github.com/Open-Paws/no-animal-violence-pre-commit
     rev: v0.1.0
     hooks:
-      - id: speciesist-language
+      - id: no-animal-violence
 ```
 
 Then run:
