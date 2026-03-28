@@ -1,0 +1,7 @@
+- id: no-animal-violence
+  name: No Animal Violence Language Scanner
+  description: Detect language that normalizes violence toward animals and suggest alternatives
+  entry: no-animal-violence-check
+  language: python
+  types: [text]
+  stages: [pre-commit]
