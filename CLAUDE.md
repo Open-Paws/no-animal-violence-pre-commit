@@ -104,3 +104,17 @@ pre-commit try-repo . no-animal-violence --all-files
 ### Structured Coding Reference
 
 For tool-specific AI coding instructions (Claude Code rules, Cursor MDC, Copilot, Windsurf, etc.), copy the corresponding directory from `structured-coding-with-ai` into this project root.
+
+## MCP Integrations (live 2026-04-09)
+
+This scanner is now consumed by live MCP infrastructure in addition to pre-commit use:
+
+- **reviewdog-no-animal-violence** pip-installs this package and pipes its output through reviewdog for inline PR annotations. The output format (`%f:%l: %m`) must remain stable.
+- **mcp-server-nav-language** — Pure regex MCP server (sub-10ms) that implements the same 65+ pattern set from this repo for real-time agent enforcement via Gary MCP hub Phase 3. Both tools enforce the same patterns; this hook runs at commit time, the MCP server runs at agent generation time.
+- **lbr8-mcp-constraints** — `StaticConstraintSource` bundles 12 offline NAV patterns from this suite as MCP middleware.
+- **mcp-server-aha-evaluation** — Uses NAV rules as Stage 1 of a two-stage content evaluation pipeline.
+- **Audit-to-dispatch (decision #37, 2026-04-11)** — NAV violations found during ecosystem audits now auto-dispatch as agent fix tasks.
+
+## Decisions Reviewed
+
+Last reviewed: 2026-04-11 (decisions #37 audit-to-dispatch, mcp-server-nav-language live)
