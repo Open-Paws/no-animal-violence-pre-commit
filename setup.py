@@ -1,5 +1,7 @@
 from setuptools import setup
 
+REPO_URL = "https://github.com/Open-Paws/no-animal-violence-pre-commit"
+
 setup(
     name='no-animal-violence-check',
     version='0.2.0',
@@ -14,5 +16,5 @@ setup(
     author_email='hello@openpaws.ai',
     description='Pre-commit hook for detecting language that normalizes violence toward animals',
     license='MIT',
-    url='https://github.com/Open-Paws/no-animal-violence-pre-commit',
+    url=REPO_URL,
 )
