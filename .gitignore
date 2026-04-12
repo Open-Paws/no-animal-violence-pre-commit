@@ -12,3 +12,6 @@ build/
 *.swo
 coverage/
 .turbo/
+__pycache__/
+*.pyc
+# .desloppify/ tracked intentionally — quality state committed per org policy
