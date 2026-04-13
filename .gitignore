@@ -14,4 +14,4 @@ coverage/
 .turbo/
 __pycache__/
 *.pyc
-.desloppify/
+# .desloppify/ tracked intentionally — quality state committed per org policy
