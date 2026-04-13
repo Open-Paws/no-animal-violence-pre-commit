@@ -3,7 +3,6 @@
 
 import re
 import sys
-from typing import List, Tuple
 
 
 PATTERNS = [
@@ -84,9 +83,9 @@ PATTERNS = [
 COMPILED = [(re.compile(pattern, re.IGNORECASE), alt) for pattern, alt in PATTERNS]
 
 
-def check_file(filepath: str) -> List[Tuple[str, int, str, str]]:
+def check_file(filepath):
     """Check a single file for animal violence language. Returns list of findings."""
-    findings: List[Tuple[str, int, str, str]] = []
+    findings = []
     try:
         with open(filepath, "r", encoding="utf-8", errors="replace") as f:
             for line_num, line in enumerate(f, start=1):
@@ -95,12 +94,13 @@ def check_file(filepath: str) -> List[Tuple[str, int, str, str]]:
                         findings.append(
                             (filepath, line_num, match.group(), alternative)
                         )
-    except (OSError, IOError) as exc:
-        sys.stderr.write(f"Warning: could not read {filepath}: {exc}\n")
+    except (OSError, IOError):
+        # Skip files that can't be read
+        pass
     return findings
 
 
-def main() -> int:
+def main():
     """Entry point. Accepts filenames as arguments (provided by pre-commit)."""
     filenames = sys.argv[1:]
     if not filenames:
