@@ -2,6 +2,7 @@
 [![Version](https://img.shields.io/badge/version-0.2.0-blue)](https://github.com/Open-Paws/no-animal-violence-pre-commit/releases)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
 [![Last Commit](https://img.shields.io/github/last-commit/Open-Paws/no-animal-violence-pre-commit)](https://github.com/Open-Paws/no-animal-violence-pre-commit/commits/main)
+[![desloppify score](https://img.shields.io/badge/desloppify-90.7%2F100-brightgreen)](scorecard.png)
 
 # no-animal-violence-pre-commit
 
@@ -138,6 +139,10 @@ The hook is a single Python file (`no_animal_violence_check.py`) with no runtime
 **Python requirement:** 3.8+. The hook is registered in `.pre-commit-hooks.yaml` with `language: python` and `types: [text]`.
 
 </details>
+
+## Code Quality
+
+<img src="scorecard.png" width="100%">
 
 ## Contributing
 
