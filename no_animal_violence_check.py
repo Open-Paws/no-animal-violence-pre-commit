@@ -1,4 +1,4 @@
-# AUTO-GENERATED from Open-Paws/no-animal-violence. Do not edit directly.
+# AUTO-GENERATED from project-compassionate-code. Do not edit directly.
 """Pre-commit hook for detecting language that normalizes violence toward animals."""
 
 import re
@@ -8,7 +8,7 @@ import sys
 PATTERNS = [
     (r"kill\s+two\s+birds\s+with\s+one\s+stone", "accomplish two things at once"),
     (r"beat(ing)?\s+a\s+dead\s+horse", "belabor the point"),
-    (r"(?:more\s+than\s+one|many|other)\s+ways?\s+to\s+skin\s+a\s+cat", "more than one way to solve this"),
+    (r"more\s+than\s+one\s+way\s+to\s+skin\s+a\s+cat", "more than one way to solve this"),
     (r"let\s+the\s+cat\s+out\s+of\s+the\s+bag", "reveal the secret"),
     (r"open(ing)?\s+a\s+can\s+of\s+worms", "create a complicated situation"),
     (r"wild\s+goose\s+chase", "futile search"),
@@ -19,8 +19,8 @@ PATTERNS = [
     (r"hold\s+your\s+horses", "wait a moment"),
     (r"the\s+elephant\s+in\s+the\s+room", "the obvious issue"),
     (r"straight\s+from\s+the\s+horse'?s\s+mouth", "directly from the source"),
-    (r"(?:bring(?:ing|s)?|brought)\s+home\s+the\s+bacon", "bring home the results"),
-    (r"(?:take|taking|took)\s+the\s+bull\s+by\s+the\s+horns", "face the challenge head-on"),
+    (r"bring(ing)?\s+home\s+the\s+bacon", "bring home the results"),
+    (r"take?(ing|ook)?\s+the\s+bull\s+by\s+the\s+horns", "face the challenge head-on"),
     (r"like\s+lambs?\s+to\s+(the\s+)?slaughter", "without resistance"),
     (r"no\s+room\s+to\s+swing\s+a\s+cat", "very cramped"),
     (r"red\s+herring", "distraction"),
@@ -34,7 +34,7 @@ PATTERNS = [
     (r"bird\s+in\s+(the|a)\s+hand\s+(is\s+)?worth\s+two\s+in\s+the\s+bush", "a sure thing beats a possibility"),
     (r"eat(ing)?\s+crow", "admit being wrong"),
     (r"fight(ing)?\s+like\s+cats\s+and\s+dogs", "constantly argue"),
-    (r"(?:take|taking|took)\s+the\s+bait", "fall for it"),
+    (r"take?(ing|ook)?\s+the\s+bait", "fall for it"),
     (r"don'?t\s+count\s+your\s+chickens", "don't assume success prematurely"),
     (r"livestock", "farmed animals"),
     (r"poultry", "farmed birds"),
@@ -78,8 +78,6 @@ PATTERNS = [
     (r"(master|slave)", "primary/replica"),
     (r"(white|black)list", "allowlist/denylist"),
     (r"grandfather(ed|ing)?", "legacy"),
-    (r"veal", "calf flesh"),
-    (r"lame[\s-]duck", "outgoing"),
 ]
 
 COMPILED = [(re.compile(pattern, re.IGNORECASE), alt) for pattern, alt in PATTERNS]
@@ -97,6 +95,7 @@ def check_file(filepath):
                             (filepath, line_num, match.group(), alternative)
                         )
     except (OSError, IOError):
+        # Skip files that can't be read
         pass
     return findings
 
@@ -115,8 +114,8 @@ def main():
         print("Animal violence language detected:\n")
         for filepath, line_num, matched, alternative in all_findings:
             print(f"  {filepath}:{line_num}")
-            print(f'    Found:   "{matched}"')
-            print(f'    Suggest: "{alternative}"\n')
+            print(f"    Found:   \"{matched}\"")
+            print(f"    Suggest: \"{alternative}\"\n")
         print(
             f"{len(all_findings)} instance(s) found. "
             "Consider using the suggested alternatives."
