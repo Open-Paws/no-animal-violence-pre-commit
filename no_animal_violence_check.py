@@ -79,6 +79,7 @@ PATTERNS = [
     (r"(white|black)list", "allowlist/denylist"),
     (r"grandfather(ed|ing)?", "legacy"),
     (r"veal", "calf flesh"),
+    (r"lame[\s-]duck", "outgoing"),
 ]
 
 COMPILED = [(re.compile(pattern, re.IGNORECASE), alt) for pattern, alt in PATTERNS]
