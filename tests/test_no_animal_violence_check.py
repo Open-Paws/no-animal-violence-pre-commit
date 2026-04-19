@@ -22,7 +22,7 @@ class TestCheckFile(unittest.TestCase):
         try:
             findings = check_file(path)
             self.assertEqual(len(findings), 1)
-            filepath, line_num, matched, alternative = findings[0]
+            filepath, line_num, matched, alternative, reason = findings[0]
             self.assertEqual(line_num, 1)
             self.assertIn("accomplish two things at once", alternative)
         finally:
