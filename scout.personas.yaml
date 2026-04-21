@@ -1,0 +1,183 @@
+version: "1"
+interaction: hook
+# Pre-commit hook that scans staged text files for speciesist language and blocks commits on violations
+
+personas:
+  - id: clean-commit
+    name: Developer Committing Clean Files
+    description: >
+      A developer stages and commits Python, TypeScript, Markdown, or YAML files
+      that contain no speciesist idioms, industry euphemisms, or harmful tech jargon.
+      The hook should pass silently so it does not interrupt the normal commit flow.
+    environment:
+      runtime: pre-commit
+      os: any
+    flows:
+      - id: commit-clean-python
+        name: Commit a clean Python file
+        steps:
+          - run: >
+              Stage a Python file (e.g. src/utils.py) whose content uses only
+              movement-standard language — no flagged patterns from the 65+ compiled
+              regexes. Run `git commit -m "refactor: extract helper"`.
+        expected_outcome: >
+          Hook runs, iterates over every line of the staged file, finds zero matches,
+          exits with code 0, and prints nothing. Pre-commit reports the hook as
+          "Passed". Commit proceeds normally.
+    assertions:
+      succeeds:
+        - hook exits with code 0 when no patterns match
+        - no output is printed to stdout on a clean run
+        - commit is not blocked
+      fails_gracefully:
+        - hook does not raise an exception on an empty file
+      output_contains: []
+
+  - id: speciesist-commit
+    name: Developer Committing a File with Speciesist Idioms
+    description: >
+      A developer stages a file that contains one or more phrases flagged by the
+      65+ compiled regexes — for example "kill two birds with one stone" in a
+      comment, "cattle vs. pets" in documentation, or "livestock" in a config file.
+      The hook should block the commit and print specific, actionable violation
+      details (file path, line number, matched phrase, suggested alternative, and
+      the reason for the flag).
+    environment:
+      runtime: pre-commit
+      os: any
+    flows:
+      - id: commit-with-idiom
+        name: Commit a file containing a flagged phrase
+        steps:
+          - run: >
+              Stage a Python file (e.g. src/utils.py) that contains the comment
+              `# kill two birds with one stone` on line 14 and the string
+              `"cattle vs. pets"` on line 37. Run `git commit -m "add helpers"`.
+        expected_outcome: >
+          Hook exits with code 1. Output begins with "Animal violence language
+          detected:" followed by a two-finding block showing
+          "src/utils.py:14", Found/Suggest/Why fields for the first match, then
+          "src/utils.py:37" with Found/Suggest/Why fields for the second match.
+          Summary line reads "2 instance(s) found. Consider using the suggested
+          alternatives." Commit is blocked; the developer must fix the phrases,
+          re-stage, and retry.
+      - id: commit-with-industry-term
+        name: Commit a file containing an industry euphemism
+        steps:
+          - run: >
+              Stage a Markdown file (e.g. docs/glossary.md) that uses the word
+              "livestock" on line 5. Run `git commit -m "update glossary"`.
+        expected_outcome: >
+          Hook exits with code 1. Output shows "docs/glossary.md:5",
+          Found: "livestock", Suggest: "farmed animals", Why: explanation.
+          Summary reads "1 instance(s) found." Commit is blocked.
+    assertions:
+      succeeds: []
+      fails_gracefully:
+        - commit is blocked with a non-zero exit code
+        - each violation is reported with file path and line number
+        - the suggested alternative is printed for every match
+        - the reason field is printed for every match
+        - a summary count line is printed after all findings
+      output_contains:
+        - "Animal violence language detected:"
+        - "Found:"
+        - "Suggest:"
+        - "Why:"
+        - "instance(s) found. Consider using the suggested alternatives."
+
+  - id: binary-file-commit
+    name: Developer Committing a Binary File
+    description: >
+      A developer stages a binary file — a compiled artifact, image, or font —
+      alongside text files. Pre-commit's `types: [text]` filter in
+      .pre-commit-hooks.yaml means the hook script never receives binary filenames
+      as arguments. The hook should neither crash nor flag binary content.
+    environment:
+      runtime: pre-commit
+      os: any
+    flows:
+      - id: commit-binary-only
+        name: Commit a binary file with no text files staged
+        steps:
+          - run: >
+              Stage only a PNG image (e.g. scorecard.png). Run
+              `git commit -m "update scorecard image"`.
+        expected_outcome: >
+          Pre-commit's `types: [text]` filter excludes the binary file before
+          invoking the hook script. The hook is either skipped entirely (shown as
+          "Skipped" in pre-commit output) or called with an empty argument list,
+          in which case main() returns 0 immediately. No output is printed by the
+          hook. Commit proceeds normally.
+      - id: commit-mixed-clean
+        name: Commit binary and clean text files together
+        steps:
+          - run: >
+              Stage a PNG image and a clean Markdown file. Run
+              `git commit -m "add image and docs"`.
+        expected_outcome: >
+          Hook receives only the Markdown filename (binary excluded by
+          `types: [text]`). Scans the Markdown file, finds zero violations,
+          exits with code 0. Commit proceeds.
+    assertions:
+      succeeds:
+        - hook does not crash when called with no filenames
+        - binary files are never passed to the Python script
+        - commit proceeds when only binary files are staged
+      fails_gracefully:
+        - OSError or IOError on file open is silently ignored per check_file()
+      output_contains: []
+
+  - id: full-repo-scan
+    name: Developer Running pre-commit run --all-files
+    description: >
+      A developer runs a full-repo scan — typically on first install or as a CI
+      step — to find any existing speciesist language across all tracked text files,
+      not just staged changes. This exercises the hook against the entire working
+      tree and may surface many violations at once.
+    environment:
+      runtime: pre-commit
+      os: any
+    flows:
+      - id: scan-clean-repo
+        name: Full scan of a repo with no violations
+        steps:
+          - run: >
+              In a repository where all tracked text files use movement-standard
+              language, run `pre-commit run no-animal-violence --all-files`.
+        expected_outcome: >
+          Hook receives all tracked text file paths. Iterates every line of every
+          file, finds zero matches, exits with code 0. Pre-commit reports
+          "no-animal-violence...Passed". No findings output.
+      - id: scan-repo-with-violations
+        name: Full scan of a repo that has existing violations
+        steps:
+          - run: >
+              In a repository where several files contain flagged phrases, run
+              `pre-commit run no-animal-violence --all-files`.
+        expected_outcome: >
+          Hook exits with code 1. All violations across all files are printed in
+          order — each as a filepath:line_num block with Found/Suggest/Why fields.
+          Summary line shows total count. Pre-commit reports
+          "no-animal-violence...Failed". The developer can use the output as a
+          remediation checklist.
+      - id: one-shot-try-repo
+        name: One-shot scan without installing hooks
+        steps:
+          - run: >
+              Run `pre-commit try-repo https://github.com/Open-Paws/no-animal-violence-pre-commit
+              no-animal-violence --all-files` in any local repository.
+        expected_outcome: >
+          pre-commit clones the hook repo, installs the Python environment, and
+          runs the scan. Output and exit code behave identically to the installed
+          hook. No permanent changes are made to the repository's hook configuration.
+    assertions:
+      succeeds:
+        - hook reports Passed and exits 0 when no violations exist across all files
+      fails_gracefully:
+        - hook exits 1 and prints all violations when any file contains flagged language
+        - each finding includes filepath, line number, matched phrase, alternative, and reason
+        - total instance count is printed in the summary line
+      output_contains:
+        - "Animal violence language detected:"
+        - "instance(s) found. Consider using the suggested alternatives."
