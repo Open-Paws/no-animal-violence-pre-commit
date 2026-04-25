@@ -15,3 +15,7 @@ coverage/
 __pycache__/
 *.pyc
 # .desloppify/ tracked intentionally — quality state committed per org policy
+
+# Claude Code agent state — never commit
+.claude/agent-memory/
+.claude/worktrees/
