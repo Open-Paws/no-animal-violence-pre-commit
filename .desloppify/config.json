@@ -1,0 +1,11 @@
+{
+  "ignore": [
+    "advocacy_language::no_animal_violence_check.py"
+  ],
+  "ignore_metadata": {
+    "advocacy_language::no_animal_violence_check.py": {
+      "note": "False positives: no_animal_violence_check.py defines the advocacy language patterns as regex string literals — it is the detector, not a user of the detected terms.",
+      "added_at": "2026-05-04T00:00:00Z"
+    }
+  }
+}
